@@ -13,17 +13,12 @@ namespace SimpleCodingChallenge.Business.Actions.Employees
 {
     public class GetEmployeeByIdCommand : IRequest<GetEmployeeByIdCommandResponse>
     {
-        public string _EmployeeId { get; set; }
-        public GetEmployeeByIdCommand(string EmployeeId)
-        {
-            _EmployeeId = EmployeeId;
-        }
-
+        public string EmployeeID { get; set; }
     }
     
     public class GetEmployeeByIdCommandResponse
     {
-        public EmployeeDto EmployeeObj { get; set; }
+        public EmployeeDto Employee { get; set; }
     }
 
     public class GetEmployeeByIdCommandHandler : IRequestHandler<GetEmployeeByIdCommand, GetEmployeeByIdCommandResponse>
@@ -39,11 +34,10 @@ namespace SimpleCodingChallenge.Business.Actions.Employees
 
         public async Task<GetEmployeeByIdCommandResponse> Handle(GetEmployeeByIdCommand request, CancellationToken cancellationToken)
         {
-            var employee = await dbContext.Employees.Where(x=> x.EmployeeID == request._EmployeeId).SingleOrDefaultAsync();
-            var EmpData = mapper.Map<EmployeeDto>(employee);
+            var employee = await dbContext.Employees.SingleOrDefaultAsync(x=> x.EmployeeID.Equals(request.EmployeeID));
             return new GetEmployeeByIdCommandResponse
             {
-                EmployeeObj = EmpData
+                Employee = mapper.Map<EmployeeDto>(employee)
             };
         }
     }
