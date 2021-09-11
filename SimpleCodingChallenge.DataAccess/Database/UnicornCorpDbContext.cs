@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SimpleCodingChallenge.DataAccess.Entity;
+using System.Threading.Tasks;
 
 namespace SimpleCodingChallenge.DataAccess.Database
 {
@@ -16,5 +18,11 @@ namespace SimpleCodingChallenge.DataAccess.Database
         }
 
         public DbSet<Employee> Employees { get; set; }
+
+        public async Task<string> GetNextEmployeeID()
+        {
+            var newID = await Database.GetDbConnection().QuerySingleAsync<int>("select max(CAST(right(e.EmployeeID, len(e.EmployeeID) - 2) AS INT)) + 1 from Employees as e");
+            return $"UC{newID}";
+        }
     }
 }

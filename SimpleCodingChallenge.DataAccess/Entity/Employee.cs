@@ -9,11 +9,7 @@ namespace SimpleCodingChallenge.DataAccess.Entity
     {
         public Guid ID { get; set; }
         public string EmployeeID { get; set; }
-
-        [StringLength(maximumLength: 100)]
         public string FirstName { get; set; }
-
-        [StringLength(maximumLength: 100)]
         public string LastName { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
@@ -51,6 +47,15 @@ namespace SimpleCodingChallenge.DataAccess.Entity
                 .IsUnique();
 
             builder.Ignore(e => e.Age);
+
+            builder.Property(e => e.FirstName)
+                .HasMaxLength(100);
+            builder.Property(e => e.LastName)
+                .HasMaxLength(100);
+
+            builder.Property(e => e.Country)
+                .IsRequired(false).HasMaxLength(100)
+                .HasDefaultValue("N/A");
         }
     }
 }

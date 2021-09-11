@@ -9,7 +9,7 @@ namespace SimpleCodingChallenge.Business.Configuration
         public AutoMapperProfile()
         {
             CreateMap<Employee, EmployeeDto>()
-                .ForMember(x => x.Country, opt => opt.NullSubstitute("N/A"))
+                .ForMember(x => x.FullName, opt => opt.MapFrom(e => $"{e.FirstName} {e.LastName}"))
                 .ReverseMap();
         }
     }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleCodingChallenge.DataAccess.Database;
 
 namespace SimpleCodingChallenge.DataAccess.Migrations
 {
     [DbContext(typeof(SimpleCodingChallengeDbContext))]
-    partial class SimpleCodingChallengeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210910133704_TableUpdate_AddColumnCountry")]
+    partial class TableUpdate_AddColumnCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using SimpleCodingChallenge.API.Models;
 using SimpleCodingChallenge.Business.Actions.Employees;
 using SimpleCodingChallenge.Common.DTO;
 using System;
@@ -30,34 +31,43 @@ namespace SimpleCodingChallenge.API.Controllers
 
         [HttpPut]
         [Route("")]
-        public async Task<ActionResult<EmployeeDto>> Create(EmployeeDto employeeDto)
+        public async Task<ActionResult<EmployeeDto>> Create([FromBody] NewEmployeeDetails employeeDetails)
         {
-            var output = await mediator.Send(new GetEmployeeByFilterCommand(Filter: "EmployeeId", Value: employeeDto.EmployeeID));
+            try
+            {
+                var result = await mediator.Send(new CreateNewEmployeeCommand
+                {
+                    FirstName = employeeDetails.FirstName,
+                    LastName = employeeDetails.LastName,
+                    Email = employeeDetails.Email,
+                    Address = employeeDetails.Address,
+                    Salary = employeeDetails.Salary,
+                    BirthDate = employeeDetails.BirthDate,
+                    Country = employeeDetails.Country,
+                    Department = employeeDetails.Department,
+                    JobTitle = employeeDetails.JobTitle
+                });
 
-            if(output.EmployeeObj != null) return BadRequest("Employee Id already exists!");
-
-            output = null;
-
-            output = await mediator.Send(new GetEmployeeByFilterCommand(Filter: "Email", Value: employeeDto.Email));
-
-            if(output.EmployeeObj != null) return BadRequest("Email already exists!");
-
-            var result = await mediator.Send(new EmployeeAddCommand(employeeDto: employeeDto));
-            
-            return Ok(result.EmployeeObj);
+                return Ok(result.Employee);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Some value provided were incorrect. Details: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         [HttpGet]
-        [Route("{Id}")]
-        public async Task<ActionResult<EmployeeDto>> GetByID(string Id)
+        [Route("")]
+        public async Task<ActionResult<EmployeeDto>> GetByID(string employeeID)
         {
-            if(!string.IsNullOrEmpty(Id))
-            {
-                var result = await mediator.Send(new GetEmployeeByIdCommand(EmployeeId: Id));
-                if(result.EmployeeObj != null) return result.EmployeeObj;
-                else return BadRequest("Id not found!");
-            }
-            else return BadRequest("Id cannot be empty!");
+            if (string.IsNullOrEmpty(employeeID))
+                return BadRequest("Employee ID cannot be null or empty");
+
+            var result = await mediator.Send(new GetEmployeeByIdCommand { EmployeeID = employeeID });
+
+            // Usually telling people that the ID is not found in the database is a bad thing,
+            // because people can brute-force to find a proper ID
+            return result.Employee;
         }
     }
 }
